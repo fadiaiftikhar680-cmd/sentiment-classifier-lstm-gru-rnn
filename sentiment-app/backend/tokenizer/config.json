@@ -1,0 +1,21 @@
+{
+    "vocab_size": 20000,
+    "max_len": 200,
+    "embedding_dim": 128,
+    "rnn_units": 64,
+    "best_model_name": "GRU",
+    "best_model_path": "models/best_model.keras",
+    "available_models": {
+        "RNN": "models/rnn.keras",
+        "LSTM": "models/lstm.keras",
+        "GRU": "models/gru.keras"
+    },
+    "label_mapping": {
+        "negative": 0,
+        "positive": 1
+    },
+    "dataset_size": 49582,
+    "training_samples": 34707,
+    "validation_samples": 7437,
+    "testing_samples": 7438
+}

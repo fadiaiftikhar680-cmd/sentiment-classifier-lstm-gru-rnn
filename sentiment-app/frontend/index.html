@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CineSense — AI Review Sentiment Analyzer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="grain-overlay"></div>
+  <div class="spotlight spotlight-left"></div>
+  <div class="spotlight spotlight-right"></div>
+
+  <div class="filmstrip filmstrip-top">
+    <div class="perf-row"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-mark">CS</span>
+        <div class="brand-text">
+          <h1>Cine<span class="accent">Sense</span></h1>
+          <p class="tagline">Deep learning sentiment analysis · RNN &middot; LSTM &middot; GRU</p>
+        </div>
+      </div>
+      <div class="model-badges" id="model-badges">
+        <span class="badge-loading">connecting to backend…</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO / ANALYZER -->
+    <section class="stage">
+      <div class="ticket-panel">
+        <div class="ticket-notch notch-left"></div>
+        <div class="ticket-notch notch-right"></div>
+
+        <div class="ticket-header">
+          <span class="eyebrow">Now screening</span>
+          <h2>Drop in a review. We'll read the room.</h2>
+        </div>
+
+        <textarea
+          id="review-input"
+          placeholder="e.g. The cinematography was breathtaking and the lead performance carried every scene, even when the script stumbled in the third act..."
+          rows="7"
+        ></textarea>
+
+        <div class="controls-row">
+          <div class="model-select-wrap">
+            <label for="model-select">Model</label>
+            <select id="model-select">
+              <option value="">Best model (auto)</option>
+              <option value="GRU">GRU</option>
+              <option value="LSTM">LSTM</option>
+              <option value="RNN">Simple RNN</option>
+            </select>
+          </div>
+          <button id="analyze-btn" class="analyze-btn">
+            <span class="btn-label">Analyze sentiment</span>
+            <span class="btn-spinner" hidden></span>
+          </button>
+        </div>
+
+        <p class="error-msg" id="error-msg" hidden></p>
+      </div>
+
+      <div class="result-panel" id="result-panel">
+        <div class="result-placeholder" id="result-placeholder">
+          <div class="reel-icon">
+            <svg viewBox="0 0 64 64" width="56" height="56">
+              <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <circle cx="32" cy="32" r="7" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <circle cx="32" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+              <circle cx="49" cy="23" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+              <circle cx="49" cy="41" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+              <circle cx="32" cy="52" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+              <circle cx="15" cy="41" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+              <circle cx="15" cy="23" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <p>Your verdict will roll here.</p>
+        </div>
+
+        <div class="result-content" id="result-content" hidden>
+          <div class="verdict-row">
+            <span class="verdict-label" id="verdict-label">POSITIVE</span>
+            <span class="verdict-model" id="verdict-model">GRU</span>
+          </div>
+
+          <div class="gauge-wrap">
+            <svg viewBox="0 0 220 130" class="gauge-svg">
+              <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="var(--track)" stroke-width="16" stroke-linecap="round"/>
+              <path id="gauge-arc" d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="var(--gold)" stroke-width="16" stroke-linecap="round"
+                    stroke-dasharray="283" stroke-dashoffset="283"/>
+              <text x="110" y="95" text-anchor="middle" class="gauge-number" id="gauge-number">0%</text>
+              <text x="110" y="115" text-anchor="middle" class="gauge-caption">confidence</text>
+            </svg>
+          </div>
+
+          <div class="prob-bars">
+            <div class="prob-row">
+              <span class="prob-tag negative">Negative</span>
+              <div class="prob-track"><div class="prob-fill negative" id="bar-negative"></div></div>
+              <span class="prob-pct" id="pct-negative">0%</span>
+            </div>
+            <div class="prob-row">
+              <span class="prob-tag positive">Positive</span>
+              <div class="prob-track"><div class="prob-fill positive" id="bar-positive"></div></div>
+              <span class="prob-pct" id="pct-positive">0%</span>
+            </div>
+          </div>
+
+          <p class="inference-note" id="inference-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODEL COMPARISON -->
+    <section class="comparison" id="comparison-section">
+      <div class="section-heading">
+        <span class="eyebrow">Behind the scenes</span>
+        <h2>Three models, one dataset, one winner</h2>
+        <p class="section-sub">Trained on 50,000 IMDb reviews. Here's how Simple RNN, LSTM, and GRU stacked up on the held-out test set.</p>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Accuracy &amp; F1 by model</h3>
+          <div class="chart-canvas-wrap"><canvas id="metricsChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Training time (seconds)</h3>
+          <div class="chart-canvas-wrap"><canvas id="timeChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="stat-strip" id="stat-strip"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="filmstrip filmstrip-bottom"><div class="perf-row"></div></div>
+    <p>CineSense · Sentiment analysis backend powered by FastAPI + TensorFlow/Keras</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
