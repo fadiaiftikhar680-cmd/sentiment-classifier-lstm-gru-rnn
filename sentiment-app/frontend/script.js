@@ -3,8 +3,7 @@
 // Talks to the FastAPI backend (main.py) running on http://localhost:8000
 // ============================================================================
 
-const API_BASE = "http://localhost:8000";
-
+const API_BASE = "https://sentiment-classifier-lstm-gru-rnn-production.up.railway.app";
 const els = {
   input: document.getElementById("review-input"),
   modelSelect: document.getElementById("model-select"),
